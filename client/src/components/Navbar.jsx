@@ -1,5 +1,5 @@
 import React from 'react';
-import {Link, NavLink} from "react-router-dom";
+import {Link, NavLink, useNavigate} from "react-router-dom";
 import {useDispatch, useSelector} from "react-redux";
 import {logout, selectIsAuth} from "../redux/slices/auth";
 import {toast} from "react-toastify";
@@ -7,13 +7,16 @@ import {toast} from "react-toastify";
 const Navbar = () => {
     const dispatch = useDispatch();
     const isAuth = useSelector(selectIsAuth);
+    const navigate = useNavigate()
 
     const activeLink = {
         color: 'white'
     };
     const onClickLogout = () => {
         dispatch(logout())
+        navigate('/register')
         toast('Вы вышли из аккаунта')
+
     };
 
     return (

@@ -60,9 +60,9 @@ const FullPost = () => {
     }
 
     const handlerSubmit = () => {
-        const postId = id
-        dispatch(createComments({postId, comment}))
-        setComment('')
+        const postId = id;
+        dispatch(createComments({postId, comment}));
+        setComment('');
     }
 
     if (!post) {

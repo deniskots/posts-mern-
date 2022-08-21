@@ -1,5 +1,6 @@
 import PostModel from '../models/Post.js';
 import UserModel from '../models/User.js';
+import CommentModel from '../models/Comment.js';
 import path, {dirname} from 'path';
 import {fileURLToPath} from 'url';
 
@@ -8,8 +9,8 @@ export const create = async (req, res) => {
     try {
         const {title, text} = req.body;
         const user = await UserModel.findById(req.userId)
-        if(req.files) {
-            let fileName =  Date.now().toString() + req.files.image.name
+        if (req.files) {
+            let fileName = Date.now().toString() + req.files.image.name
             const __dirname = dirname(fileURLToPath(import.meta.url))
             req.files.image.mv(path.join(__dirname, '..', 'uploads', fileName))
 
@@ -47,21 +48,21 @@ export const create = async (req, res) => {
     }
 };
 
-export const getAll = async (req,res) => {
+export const getAll = async (req, res) => {
     try {
         const posts = await PostModel.find().sort('-createdAt').populate('user').exec()
         const postsPopular = await PostModel.find().sort('-views').limit(5)
-        if(!posts) {
+        if (!posts) {
             return res.json({message: 'Публикаций нет'})
         }
         res.json({posts, postsPopular})
-    }catch (e) {
+    } catch (e) {
         console.log(e)
         res.status(500).json({message: 'Не удалось получить все публикации'})
     }
-}
+};
 
-export const getOne = async (req,res) => {
+export const getOne = async (req, res) => {
     try {
         const postId = req.params.id;
         //можно и просто файндван,но необходимо возращать обновленную статью,для изменения счетчика просмотра
@@ -81,13 +82,13 @@ export const getOne = async (req,res) => {
                 }
                 res.json(doc)
             }).populate('user')
-    }catch (e) {
+    } catch (e) {
         console.log(e)
         res.status(500).json({message: 'Не удалось получить публикацию'})
     }
-}
+};
 
-export const getMyPosts = async (req,res) => {
+export const getMyPosts = async (req, res) => {
     try {
         const user = await UserModel.findById(req.userId);
         const postsList = await Promise.all(
@@ -96,17 +97,17 @@ export const getMyPosts = async (req,res) => {
             })
         )
         res.json(postsList)
-    }catch (e) {
+    } catch (e) {
         console.log(e)
         res.status(500).json({message: 'Не удалось получить публикацию'})
     }
-}
+};
 
-export const deletePost = async (req,res) => {
+export const deletePost = async (req, res) => {
     try {
         const postId = req.params.id
         const post = await PostModel.findByIdAndDelete(postId)
-        if(!post) {
+        if (!post) {
             return res.json({message: 'Таклй публикации не существует'})
         }
         await UserModel.findByIdAndUpdate(req.userId, {
@@ -117,15 +118,15 @@ export const deletePost = async (req,res) => {
         console.log(err)
         res.status(500).json({message: 'Не удалось удалить публикацию'})
     }
-}
+};
 
-export const updatePost = async (req,res) => {
+export const updatePost = async (req, res) => {
     try {
         const {title, text, id} = req.body
         const post = await PostModel.findById(id)
 
-        if(req.files) {
-            let fileName =  Date.now().toString() + req.files.image.name
+        if (req.files) {
+            let fileName = Date.now().toString() + req.files.image.name
             const __dirname = dirname(fileURLToPath(import.meta.url))
             req.files.image.mv(path.join(__dirname, '..', 'uploads', fileName))
             post.imageUrl = fileName || ''
@@ -138,5 +139,20 @@ export const updatePost = async (req,res) => {
     } catch (err) {
         console.log(err)
         res.status(500).json({message: 'Не удалось удалить публикацию'})
+    }
+};
+
+export const getPostComments = async (req, res) => {
+    try {
+        const post = await PostModel.findById(req.params.id)
+        const commentList = await Promise.all(
+            post.comments.map((comment) => {
+                return CommentModel.findById(comment)
+            })
+        )
+        res.json(commentList)
+    } catch (e) {
+        console.log(e)
+        res.json({message: 'ОЙ ОШИБКА КАКАЯ-ТА'})
     }
 }

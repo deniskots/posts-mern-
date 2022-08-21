@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, {useCallback, useEffect, useState} from 'react';
 import Moment from "react-moment";
 import {AiFillEye, AiOutlineDelete, AiOutlineEdit, AiOutlineMessage} from "react-icons/ai";
 import {Link, useNavigate, useParams} from "react-router-dom";
@@ -6,14 +6,18 @@ import axios from "../utils/axios";
 import {useDispatch, useSelector} from "react-redux";
 import {fetchRemovePosts} from "../redux/slices/post";
 import {toast} from "react-toastify";
+import {createComments, fetchComments} from "../redux/slices/comment";
+import CommentItem from "../components/CommentItem";
 
 
 const FullPost = () => {
     const [post, setPost] = useState(null);
+    const [comment, setComment] = useState('');
     const {id} = useParams();
     const userData = useSelector(state => state.auth.data);
+    const {comments} = useSelector(state => state.comment);
     const dispatch = useDispatch();
-    const navigate = useNavigate()
+    const navigate = useNavigate();
 
     useEffect(() => {
         axios
@@ -25,7 +29,21 @@ const FullPost = () => {
                 console.log(err)
                 alert('Ошибка получения публикации')
             });
-    }, [])
+    }, []);
+
+    const fetchAllComments = useCallback(async () => {
+        try{
+            dispatch(fetchComments(id))
+        }catch (e) {
+            console.log(e)
+        }
+    },[dispatch, id]);
+
+    useEffect(() => {
+        fetchAllComments()
+    }, []);
+
+
 
     const removePostHandler = () => {
         try {
@@ -35,10 +53,16 @@ const FullPost = () => {
         } catch (e) {
             console.log(e)
         }
-
     }
+
     const goBack = () => {
         navigate(-1)
+    }
+
+    const handlerSubmit = () => {
+        const postId = id
+        dispatch(createComments({postId, comment}))
+        setComment('')
     }
 
     if (!post) {
@@ -48,6 +72,7 @@ const FullPost = () => {
             </div>
         )
     }
+
 
     return (
         <div>
@@ -108,8 +133,28 @@ const FullPost = () => {
                         )}
                     </div>
                 </div>
-                <div className='w-1/3'>
-                    comments
+                <div className='w-1/3  flex flex-col gap-2 rounded h-full'>
+                    <form className='flex gap-2 mb-4' onSubmit={(e) => e.preventDefault()}>
+                        <input
+                            value={comment}
+                            onChange={(e) => setComment(e.target.value)}
+                            type="text"
+                            className='mt-1 text-black w-full rounded-xs bg-zinc-50 p-2  text-xm outline-none'
+                            placeholder='Коментировать'
+                        />
+                        <button
+                            type='submit'
+                            className='flex items-center justify-center bg-gray-600 text-white text-xm p-2 rounded'
+                            onClick={handlerSubmit}
+                        >
+                            Добавить
+                        </button>
+                    </form>
+                    {
+                        comments?.map((cmt) => (
+                            <CommentItem key={cmt._id} cmt={cmt}/>
+                        ))
+                    }
                 </div>
             </div>
         </div>

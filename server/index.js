@@ -4,6 +4,7 @@ import cors from 'cors';
 import dotenv from 'dotenv';
 import authRouter from './routes/auth.js';
 import postRouter from './routes/post.js';
+import commentRouter from './routes/comment.js';
 import fileUpload from 'express-fileupload';
 
 const app = express();
@@ -19,6 +20,7 @@ app.use(express.static('uploads'))
 
 app.use('/api/auth', authRouter)
 app.use('/api/posts', postRouter)
+app.use('/api/comments', commentRouter)
 
 const PORT = process.env.PORT || 3003
 const DB_USER = process.env.DB_USER

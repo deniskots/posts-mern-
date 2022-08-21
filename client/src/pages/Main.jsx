@@ -7,8 +7,7 @@ import {fetchPosts} from "../redux/slices/post";
 
 const Main = () => {
     const dispatch = useDispatch();
-    const {posts, popularPosts, loading} = useSelector(state => state.post);
-    const isPostLoading = loading === 'true';
+    const {posts, postsPopular} = useSelector(state => state.post);
 
 
     useEffect(() => {
@@ -36,10 +35,10 @@ const Main = () => {
                     { posts?.map((post, index) => <PostItem key={index} post={post}/>)}
                 </div>
                 <div className='basis-1/5'>
-                    <div className='text-xs text-white uppercase'>
+                    <div className='text-xm text-white uppercase'>
                         Популярные:
                     </div>
-                    {popularPosts?.map((post, index) => <PopularPost key={index} post={post}/>)}
+                    {postsPopular?.map((post, index) => <PopularPost key={index} post={post}/>)}
                 </div>
             </div>
         </div>

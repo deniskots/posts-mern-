@@ -32,7 +32,7 @@ const PostItem = ({post}) => {
                     </div>
                 </div>
                 <div className='text-xl text-white'> {post.title}</div>
-                <p className='text-xs text-white opacity-70 pt-4'>{post.text}</p>
+                <p className='text-xs text-white opacity-70 pt-4 line-clamp-3'>{post.text}</p>
                 <div className='flex gap-3 items-center mt-3'>
                     <button className='flex items-center justify-center gap-2 text-xs text-white opacity-50'>
                         <AiFillEye/> <span>{post.viewCount}</span>

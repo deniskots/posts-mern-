@@ -16,6 +16,11 @@ export const fetchRemovePosts = createAsyncThunk('post/fetchRemovePosts',async (
     return data
 })
 
+export const fetchUpdatePosts = createAsyncThunk('post/fetchUpdatePosts',async (updatedPost) => {
+    const {data} = await axios.put(`/posts/${updatedPost.id}`, updatedPost);
+    return data
+})
+
 const initialState = {
     posts: [],
     popularPosts: [],
@@ -27,7 +32,7 @@ const postsSlice = createSlice({
     initialState,
     reducers: {},
     extraReducers: {
-        //создание постов
+        //создание публикаций
         [createPosts.pending]: (state) => {
             state.posts = []
             state.loading = true
@@ -40,6 +45,7 @@ const postsSlice = createSlice({
             state.posts = []
             state.loading = false
         },
+        //получение публикаций
         [fetchPosts.pending]: (state) => {
             state.loading = true
         },
@@ -52,7 +58,7 @@ const postsSlice = createSlice({
             state.posts = []
             state.loading = false
         },
-        //удаление постов
+        //удаление публикаций
         [fetchRemovePosts.pending]: (state) => {
             state.loading = true
         },
@@ -60,6 +66,18 @@ const postsSlice = createSlice({
             state.posts = state.posts.filter((post) => post._id !== action.payload._id)
         },
         [fetchRemovePosts.rejected]: (state) => {
+            state.loading = false
+        },
+        //обновление публикаций
+        [fetchUpdatePosts.pending]: (state) => {
+            state.loading = true
+        },
+        [fetchUpdatePosts.fulfilled]: (state, action) => {
+            state.loading = false
+            const index = state.posts.findIndex((post) => post._id === action.payload._id)
+            state.posts[index] = action.payload
+        },
+        [fetchUpdatePosts.rejected]: (state) => {
             state.loading = false
         }
     }

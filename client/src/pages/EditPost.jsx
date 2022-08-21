@@ -1,7 +1,8 @@
-/*import React, {useEffect, useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {useDispatch} from "react-redux";
 import {useNavigate, useParams} from "react-router-dom";
 import axios from "../utils/axios";
+import {createPosts, fetchUpdatePosts} from "../redux/slices/post";
 
 const EditPost = () => {
     const [title, setTitle] = useState('');
@@ -13,16 +14,41 @@ const EditPost = () => {
     const {id} = useParams();
 
     useEffect(() => {
-        axios
-            .get(`/posts/${id}`)
+        axios.get(`/posts/${id}`)
             .then((res) => {
-                setPost(res.data)
+                setTitle(res.data.title)
+                setText(res.data.text)
+                setOldImage(res.data.imageUrl)
             })
             .catch((err) => {
                 console.log(err)
                 alert('Ошибка получения публикации')
             });
     }, [])
+
+    const onSubmit = () => {
+        try {
+            const updatedPost = new FormData();
+            updatedPost.append('title', title);
+            updatedPost.append('text', text);
+            updatedPost.append('id', id);
+            updatedPost.append('image', newImage);
+            dispatch(fetchUpdatePosts(updatedPost));
+            navigate('/')
+        } catch (error) {
+            console.log(error)
+        }
+
+    }
+
+    const onClickRemoveImage = () => {
+        setNewImage('')
+        setOldImage('')
+    };
+    const clearFormHandler = () => {
+        setText('')
+        setTitle('')
+    }
 
     return (
         <form
@@ -36,15 +62,26 @@ const EditPost = () => {
                 <input
                     type="file"
                     className='hidden'
-                    onChange={(e) => setImage(e.target.files[0])}
+                    onChange={(e) => {
+                        setNewImage(e.target.files[0])
+                        setOldImage('')
+
+                    }}
                 />
             </label>
             <div
                 className='flex flex-col object-cover py-3 text-gray-300'
             >
-                {image && <img src={URL.createObjectURL(image)} alt=""/>}
-                {image &&
-                    <button
+                {oldImage && <img src={`http://localhost:3003/${oldImage}`}/>}
+                {newImage && <img src={URL.createObjectURL(newImage)} alt=""/>}
+                {newImage
+                    ? <button
+                        onClick={onClickRemoveImage}
+                        className='flex justify-center items-center mt-2 bg-red-500 text-xs text-white rounded-sm py-2 px-4'
+                    >
+                        Delete
+                    </button>
+                    : <button
                         onClick={onClickRemoveImage}
                         className='flex justify-center items-center mt-2 bg-red-500 text-xs text-white rounded-sm py-2 px-4'
                     >
@@ -79,7 +116,7 @@ const EditPost = () => {
                     className='flex items-center justify-center bg-gray-600 text-white text-xs py-2 px-4 rounded-xm'
                     onClick={onSubmit}
                 >
-                    Добавить
+                    Обновить
                 </button>
                 <button
                     onClick={clearFormHandler}
@@ -93,4 +130,4 @@ const EditPost = () => {
     );
 };
 
-export default EditPost;*/
+export default EditPost;

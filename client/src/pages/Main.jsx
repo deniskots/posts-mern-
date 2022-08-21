@@ -13,7 +13,7 @@ const Main = () => {
 
     useEffect(() => {
         dispatch(fetchPosts())
-    }, [dispatch])
+    }, [])
 
     if(!posts) {
         return (

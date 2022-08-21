@@ -93,7 +93,10 @@ const FullPost = () => {
                                 <button
                                     className='flex items-center justify-center gap-2 text-xl text-white opacity-50'
                                 >
-                                    <AiOutlineEdit/>
+                                    <Link to={`/${id}/edit`}>
+                                        <AiOutlineEdit/>
+                                    </Link>
+
                                 </button>
                                 <button
                                     className='flex items-center justify-center gap-2 text-xl text-white opacity-50'

@@ -1,22 +1,22 @@
-import React, {useEffect, useState} from 'react';
+import React, {useCallback, useEffect, useState} from 'react';
 import axios from "../utils/axios";
 import PostItem from "../components/PostItem";
 
 const Posts = () => {
     const [posts, setPosts] = useState([]);
 
-    const fetchMyPosts = async () => {
+    const fetchMyPosts = useCallback(async () => {
         try {
             const {data} = await axios.get('/posts/user/me')
             setPosts(data)
         } catch (e) {
             console.log(e)
         }
-    };
+    },[]);
 
     useEffect(() => {
         fetchMyPosts()
-    }, [])
+    }, [fetchMyPosts])
 
 
 

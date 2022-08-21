@@ -21,7 +21,7 @@ const AddPost = () => {
             /*setText('')
             setTitle('')
             setImage('')*/
-            navigate('/')
+            navigate('/posts')
         } catch (e) {
             console.log(e)
         }
